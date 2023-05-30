@@ -4,18 +4,20 @@ namespace Wink;
 
 use Carbon\CarbonInterface;
 use DateTimeInterface;
+use Illuminate\Support\Collection;
 
 /**
  * @property string $id
- * @property string $slug
- * @property string $title
- * @property-write string $body
- * @property-read string $content
+ * @property string $domain
+ * @property string $name
  * @property CarbonInterface $updated_at
  * @property CarbonInterface $created_at
  * @property array<mixed>|null $meta
+ * @property-read Collection<WinkPost> $posts
+ * @property-read Collection<WinkTags> $tags
+ * @property-read Collection<WinkPage> $pages
  */
-class WinkPage extends AbstractWinkModel
+class WinkWebsite extends AbstractWinkModel
 {
     /**
      * The attributes that aren't mass assignable.
@@ -29,7 +31,7 @@ class WinkPage extends AbstractWinkModel
      *
      * @var string
      */
-    protected $table = 'wink_pages';
+    protected $table = 'wink_websites';
 
     /**
      * The primary key for the model.
@@ -53,37 +55,59 @@ class WinkPage extends AbstractWinkModel
     public $incrementing = false;
 
     /**
-     * The attributes that should be cast to native types.
+     * The attributes that should be casted.
      *
      * @var array
      */
     protected $casts = [
-        'id' => 'string',
-        'body' => 'string',
         'meta' => 'array',
     ];
 
     /**
-     * Get the renderable page content.
+     * The posts.
      *
-     * @return string
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function getContentAttribute()
+    public function posts()
     {
-        return $this->body;
+        return $this->hasMany(WinkPost::class, 'website_id');
     }
-
 
     /**
-     * The website.
+     * The tags.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function website()
+    public function tags()
     {
-        return $this->belongsTo(WinkWebsite::class, 'website_id');
+        return $this->hasMany(WinkTag::class, 'website_id');
     }
 
+    /**
+     * The pages.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pages()
+    {
+        return $this->hasMany(WinkPage::class, 'website_id');
+    }
+
+
+
+    // /**
+    //  * The "booting" method of the model.
+    //  *
+    //  * @return void
+    //  */
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     // static::deleting(function ($item) {
+    //     //     $item->posts()->detach();
+    //     // });
+    // }
 
     /**
      * Prepare a date for array / JSON serialization.

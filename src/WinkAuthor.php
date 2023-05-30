@@ -3,6 +3,7 @@
 namespace Wink;
 
 use Carbon\CarbonInterface;
+use DateTimeInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -127,7 +128,7 @@ class WinkAuthor extends AbstractWinkModel implements Authenticatable
      */
     public function getRememberToken()
     {
-        if (! empty($this->getRememberTokenName())) {
+        if (!empty($this->getRememberTokenName())) {
             return (string) $this->{$this->getRememberTokenName()};
         }
     }
@@ -140,7 +141,7 @@ class WinkAuthor extends AbstractWinkModel implements Authenticatable
      */
     public function setRememberToken($value)
     {
-        if (! empty($this->getRememberTokenName())) {
+        if (!empty($this->getRememberTokenName())) {
             $this->{$this->getRememberTokenName()} = $value;
         }
     }
@@ -163,6 +164,17 @@ class WinkAuthor extends AbstractWinkModel implements Authenticatable
      */
     public function getAvatarAttribute($value)
     {
-        return $value ?: 'https://secure.gravatar.com/avatar/'.md5(strtolower(trim($this->email))).'?s=80';
+        return $value ?: 'https://secure.gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?s=80';
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

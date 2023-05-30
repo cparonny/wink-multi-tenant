@@ -81,6 +81,9 @@
                                 {{truncate(entry.name, 80)}}
                             </router-link>
                         </h2>
+                        <small class="text-light">
+                            <span>{{entry.website ? entry.website.domain: 'Null'}}</span>
+                        </small>
                     </div>
 
                     <div class="ml-auto text-light mr-8">

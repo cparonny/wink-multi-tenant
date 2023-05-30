@@ -11,18 +11,17 @@
             return {
                 entry: null,
                 ready: false,
-                websites: [],
+
                 id: this.$route.params.id || 'new',
 
                 seoModalShown: false,
 
                 form: {
                     errors: [],
-                    website_id: '',
                     working: false,
                     id: '',
                     name: '',
-                    slug: '',
+                    domain: '',
                     meta: {
                         meta_description: '',
                         opengraph_title: '',
@@ -41,18 +40,17 @@
         /**
          * Prepare the component.
          */
-
         mounted() {
-            document.title = "Tag — Wink.";
+            document.title = "Website — Wink.";
 
-            this.http().get('/api/tags/' + this.id).then(response => {
+            this.http().get('/api/websites/' + this.id).then(response => {
                 this.entry = response.data.entry;
 
                 this.form.id = response.data.entry.id;
 
                 if (this.id != 'new') {
                     this.form.name = response.data.entry.name;
-                    this.form.website_id = response.data.entry.website_id;
+                    this.form.domain = response.data.entry.domain;
 
                     this.form.meta = {
                         meta_description: response.data.entry.meta.meta_description || '',
@@ -71,57 +69,47 @@
             }).catch(error => {
                 this.ready = true;
             });
-
-            this.getWebsites();
         },
 
 
-        watch: {
-            'form.slug'(val) {
-                this.debouncer(() => {
-                    this.form.slug = this.slugify(val);
-                });
-            },
+        // watch: {
+        //     'form.slug'(val) {
+        //         this.debouncer(() => {
+        //             this.form.slug = this.slugify(val);
+        //         });
+        //     },
 
-            'form.name'(val) {
-                this.debouncer(() => {
-                    if (this.form.slug) return;
+        //     'form.name'(val) {
+        //         this.debouncer(() => {
+        //             if (this.form.slug) return;
 
-                    this.form.slug = this.slugify(val);
-                });
-            },
-        },
+        //             this.form.slug = this.slugify(val);
+        //         });
+        //     },
+        // },
 
 
         methods: {
-
-            // get websites
-
-            getWebsites() {
-                this.http().get('/api/websites').then(response => {
-                    this.websites = response.data.data;
-                });
-            },
             /**
-             * Delete the tag.
+             * Delete the Website.
              */
-            deleteTag() {
-                this.alertConfirm("Are you sure you want to delete this tag?", () => {
-                    this.http().delete('/api/tags/' + this.id, this.form).then(response => {
-                        this.$router.push({name: 'tags'})
+            deleteWebsite() {
+                this.alertConfirm("Are you sure you want to delete this website?", () => {
+                    this.http().delete('/api/websites/' + this.id, this.form).then(response => {
+                        this.$router.push({name: 'websites'})
                     })
                 });
             },
 
 
             /**
-             * Save the tag.
+             * Save the Website.
              */
             save() {
                 this.form.working = true;
                 this.form.errors = [];
 
-                this.http().post('/api/tags/' + this.id, this.form).then(response => {
+                this.http().post('/api/websites/' + this.id, this.form).then(response => {
                     this.form.working = false;
 
                     this.notifySuccess('Saved!', 2000);
@@ -168,7 +156,7 @@
                         <a href="#" @click.prevent="seoModal" class="no-underline text-text-color hover:text-primary w-full block py-2 px-4">
                             SEO & Social
                         </a>
-                        <a href="#" @click.prevent="deleteTag" class="no-underline text-red w-full block py-2 px-4" v-if="id != 'new'">Delete</a>
+                        <a href="#" @click.prevent="deleteWebsite" class="no-underline text-red w-full block py-2 px-4" v-if="id != 'new'">Delete</a>
                     </div>
                 </dropdown>
             </div>
@@ -178,26 +166,15 @@
             <preloader v-if="!ready"></preloader>
 
             <h2 v-if="ready && !entry" class="text-center font-normal">
-                404 — Tag not found
+                404 — Website not found
             </h2>
 
             <div class="lg:w-2/3 mx-auto" v-if="ready && entry">
-                <h1 class="font-semibold text-3xl mb-10" v-if="id != 'new'">Edit Tag</h1>
-                <h1 class="font-semibold text-3xl mb-10" v-else>New Tag</h1>
+                <h1 class="font-semibold text-3xl mb-10" v-if="id != 'new'">Edit Website</h1>
+                <h1 class="font-semibold text-3xl mb-10" v-else>New Website</h1>
 
                 <div class="input-group">
-                    <label for="website" class="input-label">Website</label>
-                    <select name="website" class="input"
-                            v-model="form.website_id"
-                            id="website">
-                            <option v-for="website in websites" :value="website.id" :selected="website.id == form.website_id">{{website.domain}}</option>
-                    </select>
-
-                    <form-errors :errors="form.errors['website_id']"></form-errors>
-                </div>
-
-                <div class="input-group">
-                    <label for="name" class="input-label">Tag Name</label>
+                    <label for="name" class="input-label">Website Name</label>
                     <input type="text" class="input"
                            v-model="form.name"
                            placeholder="Give me a name"
@@ -207,11 +184,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="name" class="input-label">Tag Slug</label>
+                    <label for="name" class="input-label">Website Domain</label>
                     <input type="text" class="input"
-                           v-model="form.slug"
-                           placeholder="and-a-slug-please"
-                           id="slug">
+                           v-model="form.domain"
+                           placeholder="enter your domain please"
+                           id="domain">
 
                     <form-errors :errors="form.errors.slug"></form-errors>
                 </div>

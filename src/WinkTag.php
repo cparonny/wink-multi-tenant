@@ -3,6 +3,7 @@
 namespace Wink;
 
 use Carbon\CarbonInterface;
+use DateTimeInterface;
 use Illuminate\Support\Collection;
 
 /**
@@ -70,6 +71,17 @@ class WinkTag extends AbstractWinkModel
         return $this->belongsToMany(WinkPost::class, 'wink_posts_tags', 'tag_id', 'post_id');
     }
 
+
+    /**
+     * The website.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function website()
+    {
+        return $this->belongsTo(WinkWebsite::class, 'website_id');
+    }
+
     /**
      * The "booting" method of the model.
      *
@@ -82,5 +94,16 @@ class WinkTag extends AbstractWinkModel
         static::deleting(function ($item) {
             $item->posts()->detach();
         });
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

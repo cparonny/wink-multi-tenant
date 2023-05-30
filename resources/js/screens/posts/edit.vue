@@ -19,7 +19,7 @@
                 tags: [],
                 authors: [],
                 status: '',
-
+                websites: [],
                 saveKeyboardShortcut: null,
 
                 settingsModalShown: false,
@@ -34,6 +34,7 @@
 
                 form: {
                     id: '',
+                    website_id: '',
                     title: 'Draft',
                     slug: '',
                     excerpt: '',
@@ -107,6 +108,8 @@
             }).catch(error => {
                 this.ready = true;
             });
+
+            this.getWebsites();
         },
 
         computed: {
@@ -125,6 +128,16 @@
 
 
         methods: {
+
+               // get websites
+
+               getWebsites() {
+                this.http().get('/api/websites').then(response => {
+                    this.websites = response.data.data;
+                });
+            },
+
+
             registerSaveKeyboardShortcut() {
                 this.saveKeyboardShortcut = (event) => {
                     if ((event.ctrlKey || event.metaKey) && event.which == 83) {
@@ -149,6 +162,7 @@
                 if (this.id != 'new') {
                     this.form.title = data.title;
                     this.form.slug = data.slug;
+                    this.form.website_id = data.website_id;
                     this.form.excerpt = data.excerpt;
                     this.form.body = data.body;
                     this.form.published = data.published;
@@ -419,6 +433,18 @@
             </h2>
 
             <div class="lg:w-3/4 mx-auto" v-if="ready && entry">
+
+                <div class="input-group">
+                    <label for="website" class="input-label">Website</label>
+                    <select name="website" class="input"
+                            v-model="form.website_id"
+                            id="website">
+                            <option v-for="website in websites" :value="website.id" :selected="website.id == form.website_id">{{website.domain}}</option>
+                    </select>
+
+                    <!-- <form-errors :errors="form.errors['website_id']"></form-errors> -->
+                </div>
+
                 <textarea-autosize
                     placeholder="Type something here..."
                     class="text-3xl font-semibold w-full focus:outline-none mb-10"

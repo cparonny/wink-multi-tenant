@@ -45,6 +45,9 @@
                             <router-link to="/tags" class="no-underline text-text-color hover:text-primary w-full block py-2 px-4">
                                 Tags
                             </router-link>
+                            <router-link to="/websites" class="no-underline text-text-color hover:text-primary w-full block py-2 px-4">
+                                Websites
+                            </router-link>
 
                             <router-link to="/team" class="no-underline text-text-color hover:text-primary w-full block py-2 px-4">
                                 Team

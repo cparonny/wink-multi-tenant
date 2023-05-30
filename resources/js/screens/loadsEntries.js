@@ -1,40 +1,54 @@
 module.exports = {
     computed: {
         isFiltered() {
-            return !!this.searchQuery.length ||
+            return (
+                !!this.searchQuery.length ||
                 (this.filters && this.filters.status) ||
                 (this.filters && this.filters.author_id) ||
+                (this.filters && this.filters.website_id) ||
                 (this.filters && this.filters.tag_id)
-                ;
-        }
+            );
+        },
     },
-
 
     watch: {
         searchQuery() {
             this.searchEntries();
-        }
+        },
     },
-
 
     methods: {
         loadEntries() {
-            this.http().get(this.baseURL + '?wink=wink' +
-                (this.searchQuery ? '&search=' + this.searchQuery : '') +
-                (this.filters && this.filters.status ? '&status=' + this.filters.status : '') +
-                (this.filters && this.filters.author_id ? '&author_id=' + this.filters.author_id : '') +
-                (this.filters && this.filters.tag_id ? '&tag_id=' + this.filters.tag_id : '')
-            ).then(response => {
-                this.entries = response.data.data;
+            this.http()
+                .get(
+                    this.baseURL +
+                        "?wink=wink" +
+                        (this.searchQuery
+                            ? "&search=" + this.searchQuery
+                            : "") +
+                        (this.filters && this.filters.status
+                            ? "&status=" + this.filters.status
+                            : "") +
+                        (this.filters && this.filters.website_id
+                            ? "&website_id=" + this.filters.website_id
+                            : "") +
+                        (this.filters && this.filters.author_id
+                            ? "&author_id=" + this.filters.author_id
+                            : "") +
+                        (this.filters && this.filters.tag_id
+                            ? "&tag_id=" + this.filters.tag_id
+                            : "")
+                )
+                .then((response) => {
+                    this.entries = response.data.data;
 
-                this.hasMoreEntries = !!response.data.links.next;
+                    this.hasMoreEntries = !!response.data.links.next;
 
-                this.nextPageUrl = response.data.links.next;
+                    this.nextPageUrl = response.data.links.next;
 
-                this.ready = true;
-            });
+                    this.ready = true;
+                });
         },
-
 
         /**
          * Load the older entries.
@@ -42,17 +56,18 @@ module.exports = {
         loadOlderEntries() {
             this.loadingMoreEntries = true;
 
-            this.http().get(this.nextPageUrl).then(response => {
-                this.entries.push(...response.data.data);
+            this.http()
+                .get(this.nextPageUrl)
+                .then((response) => {
+                    this.entries.push(...response.data.data);
 
-                this.hasMoreEntries = !!response.data.links.next;
+                    this.hasMoreEntries = !!response.data.links.next;
 
-                this.nextPageUrl = response.data.links.next;
+                    this.nextPageUrl = response.data.links.next;
 
-                this.loadingMoreEntries = false;
-            });
+                    this.loadingMoreEntries = false;
+                });
         },
-
 
         /**
          * Filter the entries by the search query.
@@ -69,7 +84,6 @@ module.exports = {
             });
         },
 
-
         /**
          * Focus the search input when the filter dropdown opens.
          */
@@ -79,20 +93,23 @@ module.exports = {
             });
         },
 
-
         /**
          * Watch filters changes and fetch the entries.
          */
         watchFiltersChanges() {
-            this.$watch('filters', () => {
-                this.ready = false;
-
-                this.debouncer(() => {
+            this.$watch(
+                "filters",
+                () => {
                     this.ready = false;
 
-                    this.loadEntries();
-                });
-            }, {deep: true});
+                    this.debouncer(() => {
+                        this.ready = false;
+
+                        this.loadEntries();
+                    });
+                },
+                { deep: true }
+            );
         },
-    }
+    },
 };

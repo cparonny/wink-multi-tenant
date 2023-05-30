@@ -1,86 +1,101 @@
 export default [
-    {path: '/', redirect: '/posts'},
+    { path: "/", redirect: "/posts" },
 
     // Posts...
     {
-        path: '/posts',
-        name: 'posts',
-        component: require('./screens/posts/index').default
+        path: "/posts",
+        name: "posts",
+        component: require("./screens/posts/index").default,
     },
     {
-        path: '/posts/new',
-        name: 'post-new',
-        component: require('./screens/posts/edit').default
+        path: "/posts/new",
+        name: "post-new",
+        component: require("./screens/posts/edit").default,
     },
     {
-        path: '/posts/:id',
-        name: 'post-edit',
-        component: require('./screens/posts/edit').default
+        path: "/posts/:id",
+        name: "post-edit",
+        component: require("./screens/posts/edit").default,
     },
-
 
     // Categories...
     {
-        path: '/tags',
-        name: 'tags',
-        component: require('./screens/tags/index').default
+        path: "/tags",
+        name: "tags",
+        component: require("./screens/tags/index").default,
     },
 
     {
-        path: '/tags/new',
-        name: 'tag-new',
-        component: require('./screens/tags/edit').default
+        path: "/tags/new",
+        name: "tag-new",
+        component: require("./screens/tags/edit").default,
     },
 
     {
-        path: '/tags/:id',
-        name: 'tag-edit',
-        component: require('./screens/tags/edit').default
+        path: "/tags/:id",
+        name: "tag-edit",
+        component: require("./screens/tags/edit").default,
     },
 
+    // Websites...
+    {
+        path: "/websites",
+        name: "websites",
+        component: require("./screens/websites/index").default,
+    },
+
+    {
+        path: "/websites/new",
+        name: "website-new",
+        component: require("./screens/websites/edit").default,
+    },
+
+    {
+        path: "/websites/:id",
+        name: "website-edit",
+        component: require("./screens/websites/edit").default,
+    },
 
     // Authors...
     {
-        path: '/team',
-        name: 'team',
-        component: require('./screens/team/index').default
+        path: "/team",
+        name: "team",
+        component: require("./screens/team/index").default,
     },
 
     {
-        path: '/team/new',
-        name: 'team-new',
-        component: require('./screens/team/edit').default
+        path: "/team/new",
+        name: "team-new",
+        component: require("./screens/team/edit").default,
     },
 
     {
-        path: '/team/:id',
-        name: 'team-edit',
-        component: require('./screens/team/edit').default
+        path: "/team/:id",
+        name: "team-edit",
+        component: require("./screens/team/edit").default,
     },
-
 
     // Pages...
     {
-        path: '/pages',
-        name: 'pages',
-        component: require('./screens/pages/index').default
+        path: "/pages",
+        name: "pages",
+        component: require("./screens/pages/index").default,
     },
     {
-        path: '/pages/new',
-        name: 'page-new',
-        component: require('./screens/pages/edit').default
+        path: "/pages/new",
+        name: "page-new",
+        component: require("./screens/pages/edit").default,
     },
     {
-        path: '/pages/:id',
-        name: 'page-edit',
-        component: require('./screens/pages/edit').default
+        path: "/pages/:id",
+        name: "page-edit",
+        component: require("./screens/pages/edit").default,
     },
-
 
     // Catch All...
     {
-        path: '*',
-        name: 'catch-all',
-        component: require('./screens/404').default,
+        path: "*",
+        name: "catch-all",
+        component: require("./screens/404").default,
     },
 ];

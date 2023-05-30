@@ -15,6 +15,7 @@
         data() {
             return {
                 baseURL: '/api/posts',
+                websites: [],
                 tags: [],
                 authors: [],
                 entries: [],
@@ -25,6 +26,7 @@
                 searchQuery: '',
 
                 filters: {
+                    website_id: '',
                     status: '',
                     author_id: '',
                     tag_id: '',
@@ -58,6 +60,10 @@
 
                 this.http().get('/api/team').then(response => {
                     this.authors = response.data.data;
+                });
+
+                this.http().get('/api/websites').then(response => {
+                    this.websites = response.data.data;
                 });
             },
 
@@ -101,6 +107,16 @@
                            placeholder="Search..."
                            v-model="searchQuery"
                            ref="searchInput">
+
+                    <div class="flex items-center justify-between mt-5">
+                        <span>Domain</span>
+                        <select name="website"
+                                class="border border-lighter rounded w-3/5 focus:outline-none appearance-none py-1 px-3"
+                                v-model="filters.website_id">
+                            <option value="">All</option>
+                            <option v-for="website in websites" :value="website.id">{{website.domain}}</option>
+                        </select>
+                    </div>
 
                     <div class="flex items-center justify-between mt-5">
                         <span>Status</span>
@@ -166,7 +182,8 @@
                         <p class="mb-3">{{truncate(entry.body.replace(/(<([^>]+)>)/ig,""), 100)}}</p>
 
                         <small class="text-light">
-                            <span v-if="entry.published && !dateInTheFuture(entry.publish_date)">Published {{timeAgo(entry.publish_date)}}</span>
+                            <span>{{entry.website ? entry.website.domain: 'Null'}}</span>
+                            <span v-if="entry.published && !dateInTheFuture(entry.publish_date)">— Published {{timeAgo(entry.publish_date)}}</span>
                             <span v-if="entry.published && dateInTheFuture(entry.publish_date)" class="text-green">Scheduled {{timeAgo(entry.publish_date)}}</span>
                             <span v-if="! entry.published" class="text-red">Draft</span>
                             — Updated {{timeAgo(entry.updated_at)}}

@@ -97,13 +97,23 @@ class WinkPost extends AbstractWinkModel
     }
 
     /**
+     * The website.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function website()
+    {
+        return $this->belongsTo(WinkWebsite::class, 'website_id');
+    }
+
+    /**
      * Get the renderable post content.
      *
      * @return HtmlString|string
      */
     public function getContentAttribute()
     {
-        if (! $this->markdown) {
+        if (!$this->markdown) {
             return $this->body;
         }
 

@@ -17,8 +17,8 @@ class PagesController
     public function index()
     {
         $entries = WinkPage::when(request()->has('search'), function ($q) {
-            $q->where('title', 'LIKE', '%'.request('search').'%');
-        })
+            $q->where('title', 'LIKE', '%' . request('search') . '%');
+        })->with('website')
             ->orderBy('created_at', 'DESC')
             ->paginate(config('wink.pagination.pages', 30));
 
@@ -57,13 +57,17 @@ class PagesController
         $data = [
             'title' => request('title'),
             'slug' => request('slug'),
+            'website_id' => request('website_id'),
             'body' => request('body', ''),
             'meta' => request('meta', (object) []),
         ];
 
         validator($data, [
             'title' => 'required',
-            'slug' => 'required|'.Rule::unique(config('wink.database_connection').'.wink_pages', 'slug')->ignore(request('id')),
+            'slug' => 'required|' . Rule::unique(config('wink.database_connection') . '.wink_pages')->where(function ($query) {
+                $query->where('slug', request()->input('slug'))
+                    ->where('website_id', request()->input('website_id'));
+            })->ignore(request('id')),
         ])->validate();
 
         $entry = $id !== 'new' ? WinkPage::findOrFail($id) : new WinkPage(['id' => request('id')]);

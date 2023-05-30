@@ -7,6 +7,7 @@ use Wink\Http\Controllers\PostsController;
 use Wink\Http\Controllers\SPAViewController;
 use Wink\Http\Controllers\TagsController;
 use Wink\Http\Controllers\TeamController;
+use Wink\Http\Controllers\WebsitesController;
 
 // Blog Posts...
 Route::get('/api/posts', [PostsController::class, 'index'])->name('posts.index');
@@ -37,6 +38,15 @@ Route::delete('/api/pages/{id}', [PagesController::class, 'delete'])->name('page
 
 // Logout Route...
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// mutlti tenant route
+
+Route::get('/api/websites', [WebsitesController::class, 'index'])->name('websites.index');
+Route::get('/api/websites/{id?}', [WebsitesController::class, 'show'])->name('websites.show');
+Route::post('/api/websites/{id}', [WebsitesController::class, 'store'])->name('websites.store');
+Route::delete('/api/websites/{id}', [WebsitesController::class, 'delete'])->name('websites.delete');
+
+
 
 // Catch-all Route...
 Route::get('/{view?}', SPAViewController::class)->name('spa')->where('view', '(.*)');

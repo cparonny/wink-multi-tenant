@@ -4,10 +4,10 @@ namespace Wink\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Wink\Http\Resources\TagsResource;
-use Wink\WinkTag;
+use Wink\Http\Resources\WebsitesResource;
+use Wink\WinkWebsite;
 
-class TagsController
+class WebsitesController
 {
     /**
      * Return posts.
@@ -16,14 +16,14 @@ class TagsController
      */
     public function index()
     {
-        $entries = WinkTag::when(request()->has('search'), function ($q) {
+        $entries = WinkWebsite::when(request()->has('search'), function ($q) {
             $q->where('name', 'LIKE', '%' . request('search') . '%');
-        })->with('website:domain')
+        })
             ->orderBy('created_at', 'DESC')
             ->withCount('posts')
             ->paginate(config('wink.pagination.tags', 30));
 
-        return TagsResource::collection($entries);
+        return WebsitesResource::collection($entries);
     }
 
     /**
@@ -36,13 +36,13 @@ class TagsController
     {
         if ($id === 'new') {
             return response()->json([
-                'entry' => WinkTag::make([
+                'entry' => WinkWebsite::make([
                     'id' => Str::uuid(),
                 ]),
             ]);
         }
 
-        $entry = WinkTag::findOrFail($id);
+        $entry = WinkWebsite::findOrFail($id);
 
         return response()->json([
             'entry' => $entry,
@@ -59,20 +59,16 @@ class TagsController
     {
         $data = [
             'name' => request('name'),
-            'slug' => request('slug'),
-            'website_id' => request('website_id'),
+            'domain' => request('domain'),
             'meta' => request('meta', (object) []),
         ];
 
         validator($data, [
             'name' => 'required',
-            'slug' => 'required|' . Rule::unique(config('wink.database_connection') . '.wink_tags')->where(function ($query) {
-                $query->where('slug', request()->input('slug'))
-                    ->where('website_id', request()->input('website_id'));
-            })->ignore(request('id')),
+            'domain' => 'required|' . Rule::unique(config('wink.database_connection') . '.wink_websites', 'domain')->ignore(request('id')),
         ])->validate();
 
-        $entry = $id !== 'new' ? WinkTag::findOrFail($id) : new WinkTag(['id' => request('id')]);
+        $entry = $id !== 'new' ? WinkWebsite::findOrFail($id) : new WinkWebsite(['id' => request('id')]);
 
         $entry->fill($data);
 
@@ -91,7 +87,7 @@ class TagsController
      */
     public function delete($id)
     {
-        $entry = WinkTag::findOrFail($id);
+        $entry = WinkWebsite::findOrFail($id);
 
         $entry->delete();
     }

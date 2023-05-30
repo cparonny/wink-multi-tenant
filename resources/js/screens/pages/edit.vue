@@ -11,7 +11,7 @@
                 ready: false,
                 entry: null,
                 status: '',
-
+                websites: [],
                 id: this.$route.params.id || 'new',
 
                 saveKeyboardShortcut: null,
@@ -23,6 +23,7 @@
 
                 form: {
                     errors: [],
+                    website_id: '',
                     id: '',
                     title: 'Page Title',
                     slug: '',
@@ -81,6 +82,8 @@
             }).catch(error => {
                 this.ready = true;
             });
+
+            this.getWebsites();
         },
 
 
@@ -93,6 +96,16 @@
 
 
         methods: {
+
+             // get websites
+
+             getWebsites() {
+                this.http().get('/api/websites').then(response => {
+                    this.websites = response.data.data;
+                });
+            },
+
+
             registerSaveKeyboardShortcut() {
                 this.saveKeyboardShortcut = (event) => {
                     if ((event.ctrlKey || event.metaKey) && event.which == 83) {
@@ -113,6 +126,7 @@
                     this.form.title = data.title;
                     this.form.slug = data.slug;
                     this.form.body = data.body;
+                    this.form.website_id = data.website_id;
                     this.form.meta = {
                         meta_description: data.meta.meta_description || '',
                         opengraph_title: data.meta.opengraph_title || '',
@@ -244,6 +258,19 @@
             </h2>
 
             <div class="lg:w-3/4 mx-auto" v-if="ready && entry">
+
+                <div class="input-group">
+                    <label for="website" class="input-label">Website</label>
+                    <select name="website" class="input"
+                            v-model="form.website_id"
+                            id="website">
+                            <option v-for="website in websites" :value="website.id" :selected="website.id == form.website_id">{{website.domain}}</option>
+                    </select>
+
+                    <form-errors :errors="form.errors['website_id']"></form-errors>
+                </div>
+
+
                 <textarea-autosize
                         placeholder="Type something here..."
                         class="text-3xl font-semibold w-full focus:outline-none mb-10"
